@@ -509,7 +509,12 @@ def psm_collection_to_pandas(psm_collection: Union[List[Psm], Dict[str, List[Psm
     # ``fragment_ppm_error`` and ``frag_ppm_error`` are aliases for the
     # existing ``average_ppm`` column describing the fragment mass error.
     # ---------------------------------------------------------------------
-    if {"delta_mass", "calcmass"}.issubset(PSM_pandas.columns):
+    if {"expmass", "calcmass"}.issubset(PSM_pandas.columns):
+        PSM_pandas["ppm_error"] = (
+            (PSM_pandas["expmass"] - PSM_pandas["calcmass"]) /
+            PSM_pandas["calcmass"] * 1_000_000
+        )
+    elif {"delta_mass", "calcmass"}.issubset(PSM_pandas.columns):
         PSM_pandas["ppm_error"] = (
             PSM_pandas["delta_mass"] / PSM_pandas["calcmass"] * 1_000_000
         )
